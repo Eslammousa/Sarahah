@@ -1,0 +1,130 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    var username = User.Identity?.Name;
+    var domain = $"{Context.Request.Scheme}://{Context.Request.Host}";
+    var myLink = $"{domain}/{username}";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+
+<style>
+    body {
+        background: #f2f4f8;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .dashboard-card {
+        max-width: 650px;
+        margin: 70px auto;
+        background: #fff;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 35px rgba(0,0,0,0.07);
+        animation: fadeIn 0.4s ease-out;
+    }
+
+    .stats-badge {
+        font-size: 13px;
+        padding: 6px 12px;
+        border-radius: 30px;
+    }
+
+    .link-box {
+        border: 2px solid #e0e0e0;
+        padding: 10px 12px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        background: #f9fafb;
+    }
+
+    .link-text {
+        flex-grow: 1;
+        margin-right: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        overflow-wrap: anywhere;
+    }
+
+    .copy-btn, .share-btn {
+        border-radius: 8px;
+    }
+
+    .copied {
+        animation: copiedAnim 0.5s ease-out;
+    }
+
+    @@keyframes fadeIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    @@keyframes copiedAnim {
+        from
+
+    {
+        background-color: #0d6efd;
+    }
+
+    to {
+        background-color: #198754;
+    }
+
+    }
+</style>
+
+<div class="dashboard-card text-center">
+
+    <h2 class="fw-bold mb-2">Welcome, @username 👋</h2>
+    <p class="text-muted">This is your personal dashboard</p>
+
+    <!-- Link Box -->
+    <div class="mt-4 text-start">
+        <label class="fw-bold">Your Anonymous Message Link</label>
+
+        <div class="link-box mt-2">
+            <span id="myLink" class="link-text">@myLink</span>
+
+            <button onclick="copyLink()" class="btn btn-primary btn-sm copy-btn">Copy</button>
+        </div>
+
+        <div class="mt-3 d-flex gap-2 justify-content-center">
+            <a target="_blank" href="https://wa.me/?text=@Uri.EscapeDataString(myLink)" class="btn btn-success btn-sm share-btn">WhatsApp</a>
+            <a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=@Uri.EscapeDataString(myLink)" class="btn btn-primary btn-sm share-btn">Facebook</a>
+        </div>
+    </div>
+
+    <!-- Messages button -->
+    <div class="mt-4">
+        <a href="/Message/GetAllMessages/@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value"
+           class="btn btn-success btn-lg px-4 shadow-sm">
+            View Messages
+        </a>
+    </div>
+</div>
+
+<script>
+    function copyLink() {
+        const text = document.getElementById("myLink").textContent;
+        navigator.clipboard.writeText(text);
+
+        const btn = document.querySelector(".copy-btn");
+        btn.classList.add("copied");
+        btn.textContent = "Copied!";
+
+        setTimeout(() => {
+            btn.textContent = "Copy";
+            btn.classList.remove("copied");
+        }, 1200);
+    }
+</script>

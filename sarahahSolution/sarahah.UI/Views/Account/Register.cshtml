@@ -1,0 +1,193 @@
+﻿@model RegisterDTO
+@{
+    ViewBag.Title = "Create Account";
+}
+
+<style>
+    body {
+        background: #eef1f5;
+        font-family: "Segoe UI", sans-serif;
+    }
+
+    .register-box {
+        max-width: 480px;
+        margin: 60px auto;
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 18px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        animation: fadeIn 0.4s ease-in-out;
+    }
+
+    .register-title {
+        font-size: 28px;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 8px;
+        color: #222;
+    }
+
+    .subtitle {
+        text-align: center;
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 25px;
+    }
+
+        .subtitle a {
+            color: #00bfa6;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+            .subtitle a:hover {
+                text-decoration: underline;
+            }
+
+    .form-control {
+        height: 48px;
+        border-radius: 10px;
+        font-size: 15px;
+        background: #f9fafb;
+        border: 1px solid #d1d5db;
+        transition: 0.2s;
+    }
+
+        .form-control:focus {
+            border-color: #00bfa6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0, 191, 166, 0.15);
+        }
+
+    .btn-main {
+        background: #00bfa6;
+        color: #fff;
+        border-radius: 10px;
+        height: 50px;
+        font-size: 17px;
+        font-weight: 600;
+        width: 100%;
+        margin-top: 10px;
+        border: none;
+        transition: 0.2s ease-in-out;
+    }
+
+        .btn-main:hover {
+            background: #009e8d;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 191, 166, 0.3);
+        }
+
+    .text-danger {
+        font-size: 13px;
+        margin-top: 5px;
+        display: block;
+    }
+
+    label {
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: #444;
+    }
+
+    .login-section {
+        text-align: center;
+        margin-top: 18px;
+        font-size: 14px;
+    }
+
+        .login-section a {
+            color: #00bfa6;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+            .login-section a:hover {
+                text-decoration: underline;
+            }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(15px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="register-box">
+
+    <h2 class="register-title">Create Your Account</h2>
+    <p class="subtitle">
+        Already have an account?
+        <a asp-action="Login" asp-controller="Account">Login here</a>
+    </p>
+
+    <!-- Show All Validation Errors at top if needed -->
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <form asp-action="Register" method="post">
+        @Html.AntiForgeryToken()
+        <!-- Name -->
+        <div class="mb-3">
+            <label>Name</label>
+            <input asp-for="UserName" class="form-control" placeholder="Enter your name" />
+            <span asp-validation-for="UserName" class="text-danger"></span>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+            <label>Email</label>
+            <input asp-for="Email" class="form-control" placeholder="example@mail.com" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <!-- Phone -->
+        <div class="mb-3">
+            <label>Phone</label>
+            <input asp-for="Phone" class="form-control" placeholder="01234567890" />
+            <span asp-validation-for="Phone" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label>Gender</label>
+            <select asp-for="Gender" class="form-control">
+                <option value="">-- Select your gender --</option>
+                <option value="0">Male</option>
+                <option value="1">Female</option>
+                <option value="2">Other</option>
+            </select>
+            <span asp-validation-for="Gender" class="text-danger"></span>
+        </div>
+
+
+        <!-- Password -->
+        <div class="mb-3">
+            <label>Password</label>
+            <input asp-for="Password" type="password" class="form-control" placeholder="Your password" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="mb-3">
+            <label>Confirm Password</label>
+            <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Repeat password" />
+            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-main">Create Account</button>
+
+    </form>
+
+
+
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

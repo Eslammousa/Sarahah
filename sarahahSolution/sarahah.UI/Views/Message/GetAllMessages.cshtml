@@ -1,0 +1,168 @@
+﻿@model IEnumerable<MessageResponse>
+@{
+    ViewData["Title"] = "My Messages";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+
+<style>
+    body {
+        background: #f2f4f8;
+        font-family: "Segoe UI", sans-serif;
+    }
+
+    .messages-card {
+        max-width: 750px;
+        margin: 60px auto;
+        padding: 25px;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 10px 35px rgba(0,0,0,0.07);
+        animation: fadeIn 0.4s ease-out;
+    }
+
+    .msg-box {
+        background: #f9fafb;
+        border: 1px solid #e0e0e0;
+        padding: 18px;
+        border-radius: 14px;
+        margin-bottom: 18px;
+        position: relative;
+    }
+
+    .badge-new {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        padding: 4px 8px;
+        font-size: 11px;
+        border-radius: 6px;
+        background: #28a745;
+        color: #fff;
+        transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .msg-content {
+        font-size: 16px;
+        color: #333;
+        white-space: pre-line;
+    }
+
+    .msg-date {
+        font-size: 13px;
+        color: #777;
+        margin-top: 6px;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-out {
+        opacity: 0;
+        transition: opacity 0.5s ease-out;
+    }
+
+</style>
+
+<script>
+    function copyMessage(text) {
+        navigator.clipboard.writeText(text);
+    }
+
+    function fadeAndSubmit(form, id) {
+        const box = document.getElementById('msg-' + id);
+        if (box) box.classList.add('fade-out');
+        setTimeout(() => form.submit(), 500);
+        return false;
+    }
+</script>
+
+<div class="messages-card">
+    <h2 class="text-center fw-bold mb-2">Your Messages</h2>
+
+    <div class="text-center mb-4">
+        <span class="badge bg-primary me-2">Total: @Model.Count()</span>
+        <span class="badge bg-success me-2">New: @Model.Count(m => !m.IsRead)</span>
+    </div>
+
+    @{
+        var newMsgs = Model.Count(m => !m.IsRead);
+    }
+
+    @if (newMsgs > 0)
+    {
+        <p class="text-center text-success mb-4 fw-semibold">🔔 You have @newMsgs new message(s)</p>
+    }
+    else
+    {
+        <p class="text-center text-muted mb-4">No new messages</p>
+    }
+
+    @if (Model.Any())
+    {
+        <form method="post" action="/Message/DeleteAllMessage" class="text-center mb-4"
+              onsubmit="return confirm('Are you sure you want to delete ALL messages?');">
+            <button type="submit" class="btn btn-danger px-4 py-2 rounded-3">🗑 Delete All Messages</button>
+        </form>
+    }
+
+    @foreach (var msg in Model)
+    {
+        <div class="msg-box" id="msg-@msg.Id">
+
+            @if (!msg.IsRead)
+            {
+                <span class="badge-new">NEW</span>
+            }
+
+            <div class="msg-content">@msg.Content</div>
+
+            <div class="msg-date">
+                @msg.createdAt.ToLocalTime().ToString("yyyy/MM/dd hh:mm tt")
+            </div>
+
+            <div class="d-flex justify-content-end mt-3" style="gap:10px;">
+                <button type="button" class="btn btn-outline-secondary btn-sm px-3"
+                        onclick="copyMessage('@msg.Content')">
+                    📋 Copy
+                </button>
+
+                <form method="post" action="/Message/DeleteMessage/@msg.Id"
+                      onsubmit="return fadeAndSubmit(this, '@msg.Id')" style="margin:0;">
+                    <button type="submit" class="btn btn-danger btn-sm px-3">🗑 Delete</button>
+                </form>
+            </div>
+
+        </div>
+    }
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const userId = '@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value';
+        if (!userId) return;
+
+        fetch(`/Message/MarkAllRead/${userId}`, { method: "POST" })
+            .then(res => {
+                if (res.ok) {
+                    document.querySelectorAll('.badge-new').forEach(b => {
+                        b.style.opacity = "0";
+                        b.style.transform = "translateY(-6px)";
+                        setTimeout(() => b.remove(), 400);
+                    });
+                }
+            });
+    });
+</script>
