@@ -55,31 +55,25 @@
     }
 
     @@keyframes fadeIn {
-        from
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
 
-    {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     @@keyframes copiedAnim {
-        from
+        from {
+            background-color: #0d6efd;
+        }
 
-    {
-        background-color: #0d6efd;
-    }
-
-    to {
-        background-color: #198754;
-    }
-
+        to {
+            background-color: #198754;
+        }
     }
 </style>
 
@@ -116,7 +110,20 @@
 <script>
     function copyLink() {
         const text = document.getElementById("myLink").textContent;
-        navigator.clipboard.writeText(text);
+
+        // HTTPS → Clipboard API يعمل بشكل طبيعي
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text);
+        }
+        else {
+            // HTTP fallback يعمل على كل المتصفحات
+            const textarea = document.createElement("textarea");
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand("copy");
+            textarea.remove();
+        }
 
         const btn = document.querySelector(".copy-btn");
         btn.classList.add("copied");
