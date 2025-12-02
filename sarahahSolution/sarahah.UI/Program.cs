@@ -8,6 +8,7 @@ using sarahah.Core.ServiceContracts;
 using sarahah.Core.Services;
 using sarahah.Infrastructure.Data.DBContext;
 using sarahah.Infrastructure.Repositories;
+// test deploy
 
 var builder = WebApplication.CreateBuilder(args);
 
